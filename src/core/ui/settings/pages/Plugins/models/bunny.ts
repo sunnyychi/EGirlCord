@@ -16,9 +16,14 @@ export default function unifyBunnyPlugin(manifest: BunnyPluginManifest): Unified
             useObservable([pluginSettings]);
         },
         toggle(start: boolean) {
-            start
-                ? enablePlugin(manifest.id, true)
-                : disablePlugin(manifest.id);
+            try {
+                start
+                    ? enablePlugin(manifest.id, true)
+                    : disablePlugin(manifest.id);
+            } catch (e) {
+                console.error(e);
+                // showToast("Failed to toggle plugin " + e, findAssetId("Small"));
+            }
         },
         resolveSheetComponent() {
             return import("../sheets/PluginInfoActionSheet");

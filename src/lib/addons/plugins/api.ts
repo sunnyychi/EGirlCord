@@ -8,11 +8,18 @@ import { BunnyPluginObject } from "./types";
 
 type DisposableFn = (...props: any[]) => () => unknown;
 function shimDisposableFn<F extends DisposableFn>(unpatches: (() => void)[], f: F): F {
-    return ((...props: Parameters<F>) => {
+    const dummy = ((...props: Parameters<F>) => {
         const up = f(...props);
         unpatches.push(up);
         return up;
     }) as F;
+
+    for (const key in f) if (typeof f[key] === "function") {
+        // @ts-ignore
+        dummy[key] = shimDisposableFn(unpatches, f[key] as DisposableFn);
+    }
+
+    return dummy;
 }
 
 export function createBunnyPluginApi(id: string) {

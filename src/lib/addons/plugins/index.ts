@@ -152,7 +152,8 @@ export async function updateRepository(repoUrl: string) {
         }
     }
 
-    await Promise.all(Object.keys(repo).map(async pluginId => {
+    const pluginIds = Object.keys(repo).filter(id => !id.startsWith("$"));
+    await Promise.all(pluginIds.map(async pluginId => {
         if (!storedRepo || !storedRepo[pluginId] || repo[pluginId].alwaysFetch || isGreaterVersion(repo[pluginId].version, storedRepo[pluginId].version)) {
             updated = true;
             pluginRepositories[repoUrl][pluginId] = repo[pluginId];
@@ -166,7 +167,7 @@ export async function updateRepository(repoUrl: string) {
     }));
 
     // Register plugins in this repository
-    for (const id in repo) {
+    for (const id of pluginIds) {
         const manifest = getPreloadedStorage<t.BunnyPluginManifest>(`plugins/manifests/${id}.json`);
         if (manifest === undefined) continue; // shouldn't happen, but just incase if it does
 
