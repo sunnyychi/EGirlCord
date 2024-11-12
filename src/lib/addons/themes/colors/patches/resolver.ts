@@ -54,6 +54,7 @@ export default function patchDefinitionAndResolver() {
             }
 
             if (semanticDef?.value) {
+                if (semanticDef.opacity === 1) return semanticDef.value;
                 return chroma(semanticDef.value).alpha(semanticDef.opacity).hex();
             }
 
