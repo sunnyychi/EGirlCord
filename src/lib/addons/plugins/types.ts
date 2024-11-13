@@ -1,5 +1,5 @@
-import { createStorage } from "@core/vendetta/storage";
 import { BunnyManifest } from "@lib/addons/types";
+import { createStorage } from "@lib/api/storage";
 import { Logger } from "@lib/utils/logger";
 
 export type PluginRepo = Record<string, {
@@ -45,7 +45,7 @@ export interface PluginInstanceInternal extends PluginInstance {
 export interface BunnyPluginProperty {
     readonly manifest: BunnyPluginManifestInternal;
     readonly logger: Logger;
-    createStorage<T>(): ReturnType<typeof createStorage<T>>;
+    createStorage<T extends object>(): ReturnType<typeof createStorage<T>>;
 }
 
 export type BunnyPluginObject = typeof window.bunny & {
