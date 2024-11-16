@@ -23,7 +23,7 @@ for (const key in metroModules) {
     const id = Number(key);
     const metroModule = metroModules[id];
 
-    const cache = getMetroCache().exportsIndex[id];
+    const cache = getMetroCache().flagsIndex[id];
     if (cache & ModuleFlags.BLACKLISTED) {
         blacklistModule(id);
         continue;
@@ -86,7 +86,7 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
         moduleExports.default.track = () => Promise.resolve();
 
     if (moduleExports.registerAsset) {
-        require("@lib/api/assets").patchAssets(moduleExports);
+        require("@lib/api/assets/patches").patchAssets(moduleExports);
     }
 
     // There are modules registering the same native component
@@ -99,6 +99,7 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
 
         patchedNativeComponentRegistry = true;
     }
+
 
     // Hook DeveloperExperimentStore
     if (moduleExports?.default?.constructor?.displayName === "DeveloperExperimentStore") {
@@ -130,7 +131,7 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
         patchedInspectSource = true;
     }
 
-    // Explosion (no, I can't explain this, don't ask) ((hi rosie))
+    //
     if (moduleExports.findHostInstance_DEPRECATED) {
         const prevExports = metroModules[id - 1]?.publicModule.exports;
         const inc = prevExports.default?.reactProfilingEnabled ? 1 : -1;

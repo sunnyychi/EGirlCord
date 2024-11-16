@@ -1,4 +1,5 @@
-import { TextStyles, ThemeColors } from "@lib/ui/types";
+import { Nullish } from "@lib/utils/types";
+import { TextStyles, ThemeColors } from "@ui/types";
 import { Falsey } from "lodash";
 import { FC, MutableRefObject, PropsWithoutRef, ReactNode, RefObject } from "react";
 import type * as RN from "react-native";
@@ -110,7 +111,7 @@ interface TextInputProps extends Omit<RN.TextInputProps, "onChange" | "onChangeT
     trailingIcon?: React.FC<any>;
     trailingPressableProps?: PressableProps;
     trailingText?: string;
-    value?: string | Falsey;
+    value?: string | Nullish;
 }
 
 export type TextInput = React.FC<TextInputProps>;
@@ -141,6 +142,7 @@ interface FABProps {
     style?: Style;
     onPress: () => void;
     positionBottom?: number;
+
 }
 
 export type FloatingActionButton = React.FC<FABProps>;
