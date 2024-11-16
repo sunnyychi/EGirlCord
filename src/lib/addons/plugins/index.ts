@@ -267,6 +267,7 @@ export async function uninstallPlugin(id: string) {
     pluginInstances.has(id) && stopPlugin(id);
     delete pluginSettings[id];
 
+    await purgeStorage(`plugins/storage/${id}.json`);
     await removeFile(`plugins/scripts/${id}.js`);
 }
 

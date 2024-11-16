@@ -17,23 +17,9 @@ import { Button, Card, FlashList, IconButton, Text } from "@metro/common/compone
 import { ComponentProps } from "react";
 import { View } from "react-native";
 
+import { UnifiedPluginModel } from "./models";
 import unifyBunnyPlugin from "./models/bunny";
 import unifyVdPlugin from "./models/vendetta";
-
-export interface UnifiedPluginModel {
-    id: string;
-    name: string;
-    description?: string;
-    authors?: Author[];
-    icon?: string;
-
-    isEnabled(): boolean;
-    usePluginState(): void;
-    isInstalled(): boolean;
-    toggle(start: boolean): void;
-    resolveSheetComponent(): Promise<{ default: React.ComponentType<any>; }>;
-    getPluginSettingsComponent(): React.ComponentType<any> | null | undefined;
-}
 
 const { openAlert } = lazyDestructure(() => findByProps("openAlert", "dismissAlert"));
 const { AlertModal, AlertActions, AlertActionButton } = lazyDestructure(() => findByProps("AlertModal", "AlertActions"));

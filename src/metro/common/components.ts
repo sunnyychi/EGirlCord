@@ -64,6 +64,7 @@ export const AlertActions = findProp("AlertActions");
 export const AvatarPile = findSingular("AvatarPile");
 
 // Misc.
+export const ContextMenu = findProp("ContextMenu") as t.ContextMenu;
 export const Stack = findProp("Stack") as t.Stack;
 export const Avatar = findProp("default", "AvatarSizes", "getStatusSize");
 

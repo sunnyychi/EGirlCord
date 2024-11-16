@@ -164,6 +164,7 @@ type TextProps = React.ComponentProps<typeof RN.Text> & {
 export type Text = React.FC<TextProps>;
 
 interface IconButtonProps {
+    label?: string;
     icon: ImageSourcePropType | ReactNode;
     onPress: () => void;
     disabled?: boolean;
@@ -246,3 +247,20 @@ interface TableCheckboxRowProps extends TableRowBaseProps {
 }
 
 export type TableCheckboxRow = FC<TableCheckboxRowProps>;
+
+interface ContextMenuItem {
+    label: string;
+    variant?: LiteralUnion<"destructive", string>;
+    iconSource?: number;
+    action: () => unknown;
+}
+
+interface ContextMenuProps {
+    triggerOnLongPress?: boolean;
+    items: ContextMenuItem[] | ContextMenuItem[][];
+    align?: "left" | "right" | "above" | "below" | "auto" | null;
+    title?: string;
+    children: React.FC<Record<"onPress" | "onLongPress" | "accessibilityActions" | "onAccessibilityAction", any>>;
+}
+
+export type ContextMenu = FC<ContextMenuProps>;

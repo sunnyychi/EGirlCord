@@ -1,8 +1,9 @@
+import { PyoncordIcon } from "@core/ui/settings";
 import { disablePlugin, enablePlugin, getPluginSettingsComponent, isPluginEnabled, pluginSettings } from "@lib/addons/plugins";
 import { BunnyPluginManifest } from "@lib/addons/plugins/types";
 import { useObservable } from "@lib/api/storage";
 
-import { UnifiedPluginModel } from "..";
+import { UnifiedPluginModel } from ".";
 
 export default function unifyBunnyPlugin(manifest: BunnyPluginManifest): UnifiedPluginModel {
     return {
@@ -10,6 +11,13 @@ export default function unifyBunnyPlugin(manifest: BunnyPluginManifest): Unified
         name: manifest.display.name,
         description: manifest.display.description,
         authors: manifest.display.authors,
+
+        getBadges() {
+            return [
+                { source: { uri: PyoncordIcon } },
+                // { source: findAssetId("CheckmarkLargeBoldIcon")! }
+            ];
+        },
         isEnabled: () => isPluginEnabled(manifest.id),
         isInstalled: () => manifest.id in pluginSettings,
         usePluginState() {
