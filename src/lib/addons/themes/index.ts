@@ -60,30 +60,41 @@ function processData(data: VendettaThemeManifest) {
     return data;
 }
 
-export async function fetchTheme(id: string, selected = false) {
+function validateTheme(themeJSON: any): boolean {
+    if (typeof themeJSON !== "object" || themeJSON === null) return false;
+    if (themeJSON.spec !== 2 && themeJSON.spec !== 3) return false;
+    if (!themeJSON.main) return false;
+
+    return true;
+}
+
+export async function fetchTheme(url: string, selected = false) {
     let themeJSON: any;
 
     try {
-        themeJSON = await (await safeFetch(id, { cache: "no-store" })).json();
+        themeJSON = await (await safeFetch(url, { cache: "no-store" })).json();
     } catch {
-        throw new Error(`Failed to fetch theme at ${id}`);
+        throw new Error(`Failed to fetch theme at ${url}`);
     }
 
-    themes[id] = {
-        id: id,
+    // Validate theme
+    if (!validateTheme(themeJSON)) throw new Error(`Invalid theme at ${url}`);
+
+    themes[url] = {
+        id: url,
         selected: selected,
         data: processData(themeJSON),
     };
 
     if (selected) {
-        writeThemeToNative(themes[id]);
-        updateBunnyColor(themes[id].data, { update: true });
+        writeThemeToNative(themes[url]);
+        updateBunnyColor(themes[url].data, { update: true });
     }
 }
 
-export async function installTheme(id: string) {
-    if (typeof id !== "string" || id in themes) throw new Error("Theme already installed");
-    await fetchTheme(id);
+export async function installTheme(url: string) {
+    if (typeof url !== "string" || url in themes) throw new Error("Theme already installed");
+    await fetchTheme(url);
 }
 
 export function selectTheme(theme: VdThemeInfo | null, write = true) {

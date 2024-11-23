@@ -14,7 +14,7 @@ export function parseColorManifest(manifest: ColorManifest): InternalColorDefini
     if (manifest.spec === 3) {
         const semanticColorDefinitions: InternalColorDefinition["semantic"] = {};
 
-        for (const [semanticColorKey, semanticColorValue] of Object.entries(manifest.semantic ?? {})) {
+        for (const [semanticColorKey, semanticColorValue] of Object.entries(manifest.main.semantic ?? {})) {
             if (typeof semanticColorValue === "object") {
                 const { type, value, opacity: semanticColorOpacity } = semanticColorValue;
 
@@ -47,12 +47,14 @@ export function parseColorManifest(manifest: ColorManifest): InternalColorDefini
             }
         }
 
+        if (Platform.OS === "android") applyAndroidAlphaKeys(manifest.main.raw);
+
         return {
             spec: 3,
             reference: resolveType(manifest.type),
             semantic: semanticColorDefinitions,
-            raw: manifest.raw ?? {},
-            background: manifest.background,
+            raw: manifest.main.raw ?? {},
+            background: manifest.main.background,
         };
     } else if (manifest.spec === 2) { // is Vendetta theme
         const semanticDefinitions: InternalColorDefinition["semantic"] = {};

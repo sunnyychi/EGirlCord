@@ -2,6 +2,7 @@ export type Author = { name: string, id?: `${bigint}`; };
 
 export interface BunnyManifest {
     readonly id: string;
+    readonly spec: number;
     readonly version: string;
     readonly type: string;
     readonly display: {
@@ -9,6 +10,7 @@ export interface BunnyManifest {
         readonly description?: string;
         readonly authors?: Author[];
     };
+    readonly main: unknown;
     readonly extras?: {
         readonly [key: string]: any;
     };

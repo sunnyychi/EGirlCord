@@ -13,11 +13,14 @@ interface BackgroundDefinition {
 }
 
 export interface BunnyColorManifest extends BunnyManifest {
+    type: "color";
     spec: 3;
-    type: "dark" | "light";
-    semantic?: Record<string, string | SemanticReference>;
-    raw?: Record<string, string>;
-    background?: BackgroundDefinition;
+    main: {
+        type: "dark" | "light";
+        semantic?: Record<string, string | SemanticReference>;
+        raw?: Record<string, string>;
+        background?: BackgroundDefinition;
+    }
 }
 
 export interface VendettaThemeManifest {
