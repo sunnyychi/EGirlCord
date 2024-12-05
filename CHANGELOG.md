@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.2...v1.5.3) (2024-12-05)
+
+
+### Bug Fixes
+
+* backport iOS invalid element type crash fix ([afacfa0](https://github.com/revenge-mod/revenge-bundle/commit/afacfa06480f60d461840a211c09abb363dc8546))
+
 ## [1.5.2](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.1...v1.5.2) (2024-11-13)
 
 
