@@ -1,9 +1,37 @@
-## [1.5.3](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.2...v1.5.3) (2024-12-05)
+## [1.5.4-dev.1](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.3...v1.5.4-dev.1) (2024-12-26)
 
 
 ### Bug Fixes
 
+* change `Bunny` to `Revenge` in `ErrorBoundary` content ([89f1b18](https://github.com/revenge-mod/revenge-bundle/commit/89f1b18ebb8995f9b26e3eaa83223cea54c0bc3d))
+* **lib/ui/settings:** fix icon not showing up ([2fc7715](https://github.com/revenge-mod/revenge-bundle/commit/2fc7715fa4494c0b105a6399edc4877a155d3512))
+* **ui/components/ErrorBoundaryScreen:** minor misspelling & update branding ([#57](https://github.com/revenge-mod/revenge-bundle/issues/57)) ([a71dd7d](https://github.com/revenge-mod/revenge-bundle/commit/a71dd7d0eb4c5e5003ff9743bcceab43ba2897c3))
+
+## [1.5.3-dev.3](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.3-dev.2...v1.5.3-dev.3) (2024-12-26)
+
+
+### Bug Fixes
+
+* change `Bunny` to `Revenge` in `ErrorBoundary` content ([89f1b18](https://github.com/revenge-mod/revenge-bundle/commit/89f1b18ebb8995f9b26e3eaa83223cea54c0bc3d))
+
+## [1.5.3-dev.2](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.3-dev.1...v1.5.3-dev.2) (2024-12-26)
+
+
+### Bug Fixes
+
+* **ui/components/ErrorBoundaryScreen:** minor misspelling & update branding ([#57](https://github.com/revenge-mod/revenge-bundle/issues/57)) ([a71dd7d](https://github.com/revenge-mod/revenge-bundle/commit/a71dd7d0eb4c5e5003ff9743bcceab43ba2897c3))
+
+## [1.5.3](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.2...v1.5.3) (2024-12-05)
+
+
 * backport iOS invalid element type crash fix ([afacfa0](https://github.com/revenge-mod/revenge-bundle/commit/afacfa06480f60d461840a211c09abb363dc8546))
+
+## [1.5.3-dev.1](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.2...v1.5.3-dev.1) (2024-11-24)
+
+
+### Bug Fixes
+
+* **lib/ui/settings:** fix icon not showing up ([2fc7715](https://github.com/revenge-mod/revenge-bundle/commit/2fc7715fa4494c0b105a6399edc4877a155d3512))
 
 ## [1.5.2](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.1...v1.5.2) (2024-11-13)
 

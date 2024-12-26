@@ -13,27 +13,13 @@ import { BUNNY_PROXY_PREFIX, VD_PROXY_PREFIX } from "@lib/utils/constants";
 import { lazyDestructure } from "@lib/utils/lazy";
 import { findByProps } from "@metro";
 import { NavigationNative } from "@metro/common";
-import { Card, FlashList, IconButton, Text } from "@metro/common/components";
+import { Button, Card, FlashList, IconButton, Text } from "@metro/common/components";
 import { ComponentProps } from "react";
 import { View } from "react-native";
 
+import { UnifiedPluginModel } from "./models";
 import unifyBunnyPlugin from "./models/bunny";
 import unifyVdPlugin from "./models/vendetta";
-
-export interface UnifiedPluginModel {
-    id: string;
-    name: string;
-    description?: string;
-    authors?: Author[];
-    icon?: string;
-
-    isEnabled(): boolean;
-    usePluginState(): void;
-    isInstalled(): boolean;
-    toggle(start: boolean): void;
-    resolveSheetComponent(): Promise<{ default: React.ComponentType<any>; }>;
-    getPluginSettingsComponent(): React.ComponentType<any> | null | undefined;
-}
 
 const { openAlert } = lazyDestructure(() => findByProps("openAlert", "dismissAlert"));
 const { AlertModal, AlertActions, AlertActionButton } = lazyDestructure(() => findByProps("AlertModal", "AlertActions"));
@@ -53,7 +39,7 @@ function PluginPage(props: PluginPageProps) {
             "description",
             p => p.authors?.map(
                 (a: Author | string) => typeof a === "string" ? a : a.name
-            ).join()
+            ).join() || ""
         ]}
         sortOptions={{
             "Name (A-Z)": (a, b) => a.name.localeCompare(b.name),
@@ -119,6 +105,20 @@ export default function Plugins() {
                 </Card>
             </View>;
         }}
+        ListFooterComponent={() => __DEV__ && (
+            <View style={{ alignItems: "center", justifyContent: "center", paddingTop: 16, gap: 12 }}><Button
+                size="lg"
+                text="Browse Plugins"
+                icon={findAssetId("CompassIcon")}
+                onPress={() => {
+                    navigation.push("BUNNY_CUSTOM_PAGE", {
+                        title: "Plugin Browser",
+                        render: React.lazy(() => import("../PluginBrowser")),
+                    });
+                }}
+            />
+            </View>
+        )}
         installAction={{
             label: "Install a plugin",
             fetchFn: async (url: string) => {

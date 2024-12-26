@@ -59,7 +59,7 @@ export default function PluginInfoActionSheet({ plugin, navigation }: PluginInfo
                 />
                 <ActionSheetRow
                     label={Strings.COPY_URL}
-                    icon={<TableRow.Icon source={findAssetId("copy")} />}
+                    icon={<TableRow.Icon source={findAssetId("LinkIcon")} />}
                     onPress={() => {
                         clipboard.setString(plugin.id);
                         showToast.showCopyToClipboard();
@@ -67,7 +67,7 @@ export default function PluginInfoActionSheet({ plugin, navigation }: PluginInfo
                 />
                 <ActionSheetRow
                     label={vdPlugin.update ? Strings.DISABLE_UPDATES : Strings.ENABLE_UPDATES}
-                    icon={<TableRow.Icon source={findAssetId("ic_download_24px")} />}
+                    icon={<TableRow.Icon source={findAssetId("DownloadIcon")} />}
                     onPress={() => {
                         vdPlugin.update = !vdPlugin.update;
                         showToast(formatString("TOASTS_PLUGIN_UPDATE", {
@@ -78,7 +78,8 @@ export default function PluginInfoActionSheet({ plugin, navigation }: PluginInfo
                 />
                 <ActionSheetRow
                     label={Strings.CLEAR_DATA}
-                    icon={<TableRow.Icon source={findAssetId("ic_duplicate")} />}
+                    icon={<TableRow.Icon variant="danger" source={findAssetId("CopyIcon")} />}
+                    variant="danger"
                     onPress={() => showConfirmationAlert({
                         title: Strings.HOLD_UP,
                         content: formatString("ARE_YOU_SURE_TO_CLEAR_DATA", { name: plugin.name }),
@@ -115,7 +116,8 @@ export default function PluginInfoActionSheet({ plugin, navigation }: PluginInfo
                 />
                 <ActionSheetRow
                     label={Strings.DELETE}
-                    icon={<TableRow.Icon source={findAssetId("ic_message_delete")} />}
+                    icon={<TableRow.Icon variant="danger" source={findAssetId("TrashIcon")} />}
+                    variant="danger"
                     onPress={() => showConfirmationAlert({
                         title: Strings.HOLD_UP,
                         content: formatString("ARE_YOU_SURE_TO_DELETE_PLUGIN", { name: plugin.name }),

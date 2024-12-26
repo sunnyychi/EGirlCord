@@ -80,7 +80,7 @@ if (args.adb && isADBAvailableAndAppInstalled()) {
 
         if (key.name === "r") {
             console.info(chalk.yellow(`${chalk.bold("↻ Reloading")} ${packageName}`));
-            restartAppFromADB(server.port)
+            restartAppFromADB(server.address().port)
                 .then(() => console.info(chalk.greenBright(`${chalk.bold("✔ Executed")} reload command`)))
                 .catch(e => console.error(e));
         }

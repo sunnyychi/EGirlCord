@@ -1,42 +1,24 @@
-import { installPlugin, isPluginInstalled, uninstallPlugin } from "@lib/addons/plugins";
-import { BunnyPluginManifest } from "@lib/addons/plugins/types";
+import { deleteRepository, installPlugin, isCorePlugin, isPluginInstalled, pluginRepositories, registeredPlugins, uninstallPlugin, updateAllRepository, updateRepository } from "@lib/addons/plugins";
+import { BunnyPluginManifestInternal } from "@lib/addons/plugins/types";
 import { findAssetId } from "@lib/api/assets";
+import { dismissAlert, openAlert } from "@lib/ui/alerts";
+import { AlertActionButton } from "@lib/ui/components/wrappers";
+import { hideSheet, showSheet } from "@lib/ui/sheets";
 import { showToast } from "@lib/ui/toasts";
-import { safeFetch } from "@lib/utils";
 import { OFFICIAL_PLUGINS_REPO_URL } from "@lib/utils/constants";
-import { Button, Card, FlashList, IconButton, Stack, Text } from "@metro/common/components";
+import isValidHttpUrl from "@lib/utils/isValidHttpUrl";
+import { clipboard, NavigationNative } from "@metro/common";
+import { ActionSheet, AlertActions, AlertModal, Button, Card, FlashList, IconButton, Stack, TableRow, TableRowGroup, Text, TextInput } from "@metro/common/components";
 import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
-import { chunk } from "es-toolkit";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 
 const queryClient = new QueryClient();
 
-async function arrayFromAsync<T>(iterableOrArrayLike: AsyncIterable<T>): Promise<T[]> {
-    const arr: T[] = [];
-    for await (const element of iterableOrArrayLike) arr.push(element);
-    return arr;
-}
-
-async function fetchManifest(repoURL: string, id: string) {
-    const url = new URL(`plugins/${id}/manifest.json`, repoURL);
-    const data = await safeFetch(url).then(d => d.json());
-
-    queryClient.setQueryData(["plugin-manifest-dist", { id }], data);
-
-    return data as BunnyPluginManifest;
-}
-
-async function* getManifests(repoUrl: string) {
-    const rawResponse = await safeFetch(repoUrl);
-    const pluginIds = Object.keys(await rawResponse.json());
-
-    for (const idChunks of chunk(pluginIds, 5)) {
-        const manifests = idChunks.map(id => fetchManifest(OFFICIAL_PLUGINS_REPO_URL, id));
-        for (const manifest of manifests) {
-            yield await manifest;
-        }
-    }
+async function getManifests() {
+    await updateAllRepository();
+    const plugins = [...registeredPlugins.values()];
+    return plugins.filter(p => !isCorePlugin(p.id));
 }
 
 function InstallButton(props: { id: string; }) {
@@ -67,7 +49,15 @@ function TrailingButtons(props: { id: string; }) {
     return <Stack spacing={8} direction="horizontal">
         <IconButton
             size="sm"
-            onPress={() => { }}
+            onPress={() => {
+                showSheet("plugin-info", () => {
+                    return <ActionSheet>
+                        <TableRowGroup title="Plugin Info">
+                            <TableRow label="ID" subLabel={props.id} />
+                        </TableRowGroup>
+                    </ActionSheet>;
+                });
+            }}
             variant="secondary"
             icon={findAssetId("CircleInformationIcon")}
         />
@@ -75,46 +65,52 @@ function TrailingButtons(props: { id: string; }) {
     </Stack>;
 }
 
-function PluginCard(props: { repoUrl: string, id: string, manifest: BunnyPluginManifest; }) {
-    const { isPending, error, data: plugin } = useQuery({
-        queryKey: ["plugin-manifest-dist", { id: props.id }],
-        queryFn: () => fetchManifest(props.repoUrl, props.id)
-    });
+function PluginCard(props: { manifest: BunnyPluginManifestInternal; }) {
+    const { display, version } = props.manifest;
 
     return (
         <Card>
-            {!plugin && <View style={{ justifyContent: "center", alignItems: "center" }}>
-                <Text color="text-muted" variant="heading-lg/semibold">
-                    {isPending && "Loading..."}
-                    {error && `An error has occured while fetching plugin: ${error.message}`}
-                </Text>
-            </View>}
-            {plugin && <Stack spacing={16}>
+            <Stack spacing={16}>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                     <View style={{ flexShrink: 1 }}>
                         <Text numberOfLines={1} variant="heading-lg/semibold">
-                            {plugin.name}
+                            {display.name}
                         </Text>
                         <Text variant="text-md/semibold" color="text-muted">
-                            by {plugin.authors.map(a => typeof a === "string" ? a : a.name).join(", ")}
+                            by {display.authors?.map(a => a.name).join(", ") || "Unknown"} ({version})
                         </Text>
                     </View>
                     <View>
-                        <TrailingButtons id={props.id} />
+                        <TrailingButtons id={props.manifest.id} />
                     </View>
                 </View>
                 <Text variant="text-md/medium">
-                    {plugin.description}
+                    {display.description}
                 </Text>
-            </Stack>}
+            </Stack>
         </Card>
     );
 }
 
 function BrowserPage() {
+    const navigation = NavigationNative.useNavigation();
+    useEffect(() => {
+        navigation.setOptions({
+            title: "Plugin Browser",
+            headerRight: () => <IconButton
+                size="sm"
+                variant="secondary"
+                icon={findAssetId("PlusSmallIcon")}
+                onPress={() => {
+                    showSheet("plugin-browser-options", PluginBrowserOptions);
+                }}
+            />
+        });
+    }, [navigation]);
+
     const { data, error, isPending, refetch } = useQuery({
         queryKey: ["plugins-repo-fetch"],
-        queryFn: () => arrayFromAsync(getManifests(OFFICIAL_PLUGINS_REPO_URL))
+        queryFn: () => getManifests()
     });
 
     if (error) {
@@ -149,10 +145,106 @@ function BrowserPage() {
         contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 5 }}
         renderItem={({ item: manifest }: any) => (
             <View style={{ paddingVertical: 6, paddingHorizontal: 8 }}>
-                <PluginCard repoUrl={OFFICIAL_PLUGINS_REPO_URL} id={manifest.id} manifest={manifest} />
+                <PluginCard manifest={manifest} />
             </View>
         )}
     />;
+}
+
+function AddRepositoryAlert() {
+    const [value, setValue] = useState("");
+
+    return <AlertModal
+        title="Add Repository"
+        content="Enter the URL of the repository you want to add."
+        extraContent={<TextInput
+            value={value}
+            onChange={setValue}
+            placeholder="https://example.com/repo.json" />}
+        actions={<AlertActions>
+            <AlertActionButton
+                text="Add"
+                variant="primary"
+                disabled={!isValidHttpUrl(value)}
+                onPress={async () => {
+                    try {
+                        await updateRepository(value);
+                        showToast("Added repository!", findAssetId("Check"));
+                    } catch (e) {
+                        showToast("Failed to add repository!", findAssetId("Small"));
+                    } finally {
+                        dismissAlert("bunny-add-plugin-repository");
+                        showSheet("plugin-browser-options", PluginBrowserOptions);
+                    }
+                }} />
+        </AlertActions>} />;
+}
+
+function PluginBrowserOptions() {
+    return <ActionSheet>
+        <TableRowGroup title="Repositories">
+            {Object.keys(pluginRepositories).map(url => {
+                return <RepositoryRow key={url} url={url} />;
+            })}
+            <TableRow
+                label="Add Repository..."
+                icon={<TableRow.Icon source={findAssetId("PlusMediumIcon")} />}
+                onPress={() => {
+                    openAlert("bunny-add-plugin-repository", <AddRepositoryAlert />);
+                    hideSheet("plugin-browser-options");
+                }} />
+        </TableRowGroup>
+    </ActionSheet>;
+}
+
+function RepositoryRow(props: { url: string; }) {
+    const repo = pluginRepositories[props.url];
+    const isOfficial = props.url === OFFICIAL_PLUGINS_REPO_URL;
+
+    return (
+        <TableRow
+            label={isOfficial ? "Bunny's Repository" : (repo.$meta?.name ?? "Unknown")}
+            subLabel={props.url}
+            trailing={(
+                <Stack direction="horizontal">
+                    <IconButton
+                        size="sm"
+                        variant="secondary"
+                        icon={findAssetId("LinkIcon")}
+                        onPress={() => {
+                            clipboard.setString(props.url);
+                            showToast.showCopyToClipboard();
+                        }}
+                    />
+                    <IconButton
+                        size="sm"
+                        variant="destructive"
+                        disabled={isOfficial}
+                        icon={findAssetId("TrashIcon")}
+                        onPress={() => {
+                            openAlert("bunny-remove-repository", <AlertModal
+                                title="Remove Repository"
+                                content="Are you sure you want to remove this repository?"
+                                extraContent={<Card>
+                                    <Text variant="text-md/normal">{props.url}</Text>
+                                </Card>}
+                                actions={<AlertActions>
+                                    <AlertActionButton
+                                        text="Remove"
+                                        variant="destructive"
+                                        onPress={async () => {
+                                            await deleteRepository(props.url);
+                                            showToast("Removed repository!", findAssetId("Trash"));
+                                            dismissAlert("bunny-remove-repository");
+                                        }}
+                                    />
+                                </AlertActions>}
+                            />);
+                        }}
+                    />
+                </Stack>
+            )} />
+    );
 }
 
 export default function PluginBrowser() {

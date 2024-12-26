@@ -1,4 +1,4 @@
-import { Theme } from "@lib/addons/themes";
+import { VdThemeInfo } from "@lib/addons/themes";
 import { removeCacheFile } from "./fs";
 
 // @ts-ignore
@@ -125,7 +125,7 @@ export function isThemeSupported() {
     return false;
 }
 
-export function getStoredTheme(): Theme | null {
+export function getStoredTheme(): VdThemeInfo | null {
     if (isPyonLoader()) {
         return pyonLoaderIdentity.storedTheme;
     } else if (isVendettaLoader()) {
