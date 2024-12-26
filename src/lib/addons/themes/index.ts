@@ -63,7 +63,7 @@ function processData(data: VendettaThemeManifest) {
 function validateTheme(themeJSON: any): boolean {
     if (typeof themeJSON !== "object" || themeJSON === null) return false;
     if (themeJSON.spec !== 2 && themeJSON.spec !== 3) return false;
-    if (!themeJSON.main) return false;
+    if (themeJSON.spec === 3 && !themeJSON.main) return false;
 
     return true;
 }
