@@ -1,4 +1,5 @@
 import { Strings } from "@core/i18n";
+import { PyoncordIcon } from "@core/ui/settings";
 import Version from "@core/ui/settings/pages/General/Version";
 import { useProxy } from "@core/vendetta/storage";
 import { getDebugInfo } from "@lib/api/debug";
@@ -14,7 +15,7 @@ export default function About() {
         {
             label: Strings.BUNNY,
             version: debugInfo.bunny.version,
-            icon: "ic_progress_wrench_24px",
+            icon: { uri: PyoncordIcon },
         },
         {
             label: "Discord",
@@ -24,17 +25,17 @@ export default function About() {
         {
             label: "React",
             version: debugInfo.react.version,
-            icon: "ic_category_16px",
+            icon: "ScienceIcon",
         },
         {
             label: "React Native",
             version: debugInfo.react.nativeVersion,
-            icon: "mobile",
+            icon: "MobilePhoneIcon",
         },
         {
             label: Strings.BYTECODE,
             version: debugInfo.hermes.bytecodeVersion,
-            icon: "ic_server_security_24px",
+            icon: "TopicsIcon",
         },
     ];
 
@@ -42,37 +43,37 @@ export default function About() {
         {
             label: Strings.LOADER,
             version: `${debugInfo.bunny.loader.name} (${debugInfo.bunny.loader.version})`,
-            icon: "ic_download_24px",
+            icon: "DownloadIcon",
         },
         {
             label: Strings.OPERATING_SYSTEM,
             version: `${debugInfo.os.name} ${debugInfo.os.version}`,
-            icon: "ic_cog_24px"
+            icon: "ScreenIcon"
         },
         ...(debugInfo.os.sdk ? [{
             label: "SDK",
             version: debugInfo.os.sdk,
-            icon: "pencil"
+            icon: "StaffBadgeIcon"
         }] : []),
         {
             label: Strings.MANUFACTURER,
             version: debugInfo.device.manufacturer,
-            icon: "ic_badge_staff"
+            icon: "WrenchIcon"
         },
         {
             label: Strings.BRAND,
             version: debugInfo.device.brand,
-            icon: "ic_settings_boost_24px"
+            icon: "SparklesIcon"
         },
         {
             label: Strings.MODEL,
             version: debugInfo.device.model,
-            icon: "ic_phonelink_24px"
+            icon: "MobilePhoneIcon"
         },
         {
             label: Platform.select({ android: Strings.CODENAME, ios: Strings.MACHINE_ID })!,
             version: debugInfo.device.codename,
-            icon: "ic_compose_24px"
+            icon: "TagIcon"
         }
     ];
 

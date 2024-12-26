@@ -1,15 +1,17 @@
-import { Author } from "@lib/addons/types";
+import { BunnyManifest } from "@lib/addons/types";
 import { createStorage } from "@lib/api/storage";
 import { Logger } from "@lib/utils/logger";
 
-export interface PluginRepo {
-    [id: string]: {
-        version: string;
-
-        // For plugin developing convenience, plugins with this on will always get fetched
-        alwaysFetch?: boolean;
+export type PluginRepo = Record<string, {
+    version: string;
+    // For plugin developing convenience, plugins with this on will always get fetched
+    alwaysFetch?: boolean;
+}> & {
+    $meta: {
+        name: string;
+        description: string;
     };
-}
+};
 
 export interface PluginRepoStorage {
     [repoUrl: string]: PluginRepo;
@@ -21,12 +23,10 @@ export interface PluginSettingsStorage {
     };
 }
 
-export interface BunnyPluginManifest {
-    readonly id: string;
-    readonly name: string;
-    readonly description: string;
-    readonly version: string;
-    readonly authors: Author[];
+export interface BunnyPluginManifest extends BunnyManifest {
+    readonly type: "plugin";
+    readonly spec: 3;
+    readonly main: string;
 }
 
 export interface BunnyPluginManifestInternal extends BunnyPluginManifest {
