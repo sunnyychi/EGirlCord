@@ -1,3 +1,10 @@
+## [1.5.3-dev.3](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.3-dev.2...v1.5.3-dev.3) (2024-12-26)
+
+
+### Bug Fixes
+
+* change `Bunny` to `Revenge` in `ErrorBoundary` content ([89f1b18](https://github.com/revenge-mod/revenge-bundle/commit/89f1b18ebb8995f9b26e3eaa83223cea54c0bc3d))
+
 ## [1.5.3-dev.2](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.3-dev.1...v1.5.3-dev.2) (2024-12-26)
 
 
