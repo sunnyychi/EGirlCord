@@ -25,6 +25,7 @@ const {
 
 let context = null;
 
+/** @type {import("esbuild").BuildOptions} */
 const config = {
     entryPoints: ["src/entry.ts"],
     bundle: true,

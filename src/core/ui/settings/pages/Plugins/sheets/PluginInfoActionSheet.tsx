@@ -42,7 +42,7 @@ export default function PluginInfoActionSheet({ plugin, navigation }: PluginInfo
                         // },
                         {
                             label: "Clear Data",
-                            iconSource: findAssetId("CopyIcon"),
+                            iconSource: findAssetId("FileIcon"),
                             variant: "destructive",
                             action: () => {
                             }

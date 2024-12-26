@@ -105,7 +105,7 @@ export default function Plugins() {
                 </Card>
             </View>;
         }}
-        ListFooterComponent={() => (
+        ListFooterComponent={() => __DEV__ && (
             <View style={{ alignItems: "center", justifyContent: "center", paddingTop: 16, gap: 12 }}><Button
                 size="lg"
                 text="Browse Plugins"
