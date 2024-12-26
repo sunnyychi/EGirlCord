@@ -91,10 +91,12 @@ function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
 
     // There are modules registering the same native component
     if (!patchedNativeComponentRegistry && ["customBubblingEventTypes", "customDirectEventTypes", "register", "get"].every(x => moduleExports[x])) {
-        instead("register", moduleExports, (args: any, origFunc: any) => {
+        instead("register", moduleExports, ([name, cb]: any, origFunc: any) => {
             try {
-                return origFunc(...args);
-            } catch { }
+                return origFunc(name, cb);
+            } catch {
+                return name;
+            }
         });
 
         patchedNativeComponentRegistry = true;
