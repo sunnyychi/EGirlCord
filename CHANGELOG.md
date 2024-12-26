@@ -1,3 +1,10 @@
+## [1.5.3-dev.2](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.3-dev.1...v1.5.3-dev.2) (2024-12-26)
+
+
+### Bug Fixes
+
+* **ui/components/ErrorBoundaryScreen:** minor misspelling & update branding ([#57](https://github.com/revenge-mod/revenge-bundle/issues/57)) ([a71dd7d](https://github.com/revenge-mod/revenge-bundle/commit/a71dd7d0eb4c5e5003ff9743bcceab43ba2897c3))
+
 ## [1.5.3](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.2...v1.5.3) (2024-12-05)
 
 
