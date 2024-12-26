@@ -1,11 +1,11 @@
 import { getCorePlugins } from "@core/plugins";
 import { readFile, removeFile, writeFile } from "@lib/api/native/fs";
-import { awaitStorage, createStorage, getPreloadedStorage, preloadStorageIfExists, updateStorage } from "@lib/api/storage";
+import { awaitStorage, createStorage, getPreloadedStorage, preloadStorageIfExists, purgeStorage, updateStorage } from "@lib/api/storage";
 import { safeFetch } from "@lib/utils";
 import { OFFICIAL_PLUGINS_REPO_URL } from "@lib/utils/constants";
 import { semver } from "@metro/common";
 
-import { createBunnyPluginAPI } from "./api";
+import { createBunnyPluginApi } from "./api";
 import * as t from "./types";
 
 type PluginInstantiator = (
@@ -20,12 +20,10 @@ export const corePluginInstances = new Map<string, t.PluginInstanceInternal>();
 
 export const registeredPlugins = new Map<string, t.BunnyPluginManifest>();
 export const pluginInstances = new Map<string, t.PluginInstanceInternal>();
-export const apiObjects = new Map<string, ReturnType<typeof createBunnyPluginAPI>>();
+export const apiObjects = new Map<string, ReturnType<typeof createBunnyPluginApi>>();
 
 export const pluginRepositories = createStorage<t.PluginRepoStorage>("plugins/repositories.json");
 export const pluginSettings = createStorage<t.PluginSettingsStorage>("plugins/settings.json");
-
-const manifestToId = new WeakMap<t.BunnyPluginManifest, string>();
 
 const _fetch = (repoUrl: string, path: string) => safeFetch(new URL(path, repoUrl), { cache: "no-store" });
 const fetchJS = (repoUrl: string, path: string) => _fetch(repoUrl, path).then(r => r.text());
@@ -38,9 +36,10 @@ function assert<T>(condition: T, id: string, attempt: string): asserts condition
 /**
  * Checks if a version is newer than the other. However, this comes with an additional logic,
  * where if the version are equal, one with prerelease "tag" will be considered "newer"
+ * @internal
  * @returns Whether the version is newer
  */
-function newerThan(v1: string, v2: string) {
+export function isGreaterVersion(v1: string, v2: string) {
     if (semver.gt(v1, v2)) return true;
     const coerced = semver.coerce(v1);
     if (coerced == null) return false;
@@ -53,12 +52,6 @@ function isExternalPlugin(manifest: t.BunnyPluginManifest): manifest is t.BunnyP
 
 export function isCorePlugin(id: string) {
     return corePluginInstances.has(id);
-}
-
-export function getId<T extends t.BunnyPluginManifest>(manifest: T): string {
-    const id = manifestToId.get(manifest);
-    assert(id, manifest?.name ?? "unknown", "getting ID from an unregistered/invalid manifest");
-    return id;
 }
 
 export function getPluginSettingsComponent(id: string): React.ComponentType<any> | null {
@@ -84,7 +77,7 @@ export function isPluginEnabled(id: string) {
  * @returns The newly fetched plugin manifest
  */
 export async function updateAndWritePlugin(repoUrl: string, id: string, fetchScript: boolean) {
-    const manifest: t.BunnyPluginManifestInternal = await fetchJSON(repoUrl, `plugins/${id}/manifest.json`);
+    const manifest: t.BunnyPluginManifestInternal = await fetchJSON(repoUrl, `builds/${id}/manifest.json`);
 
     // @ts-expect-error - Setting a readonly property
     manifest.parentRepository = repoUrl;
@@ -93,7 +86,7 @@ export async function updateAndWritePlugin(repoUrl: string, id: string, fetchScr
         // @ts-expect-error - Setting a readonly property
         manifest.jsPath = `plugins/scripts/${id}.js`;
 
-        const js: string = await fetchJS(repoUrl, `plugins/${id}/index.js`);
+        const js: string = await fetchJS(repoUrl, `builds/${id}/index.js`);
         await writeFile(manifest.jsPath, js);
     }
 
@@ -126,7 +119,6 @@ export async function refreshPlugin(id: string, repoUrl?: string) {
 
     registeredPlugins.delete(id);
     registeredPlugins.set(id, manifest);
-    manifestToId.set(manifest, id);
 
     await startPlugin(id);
 }
@@ -160,33 +152,33 @@ export async function updateRepository(repoUrl: string) {
         }
     }
 
-    await Promise.all(Object.keys(repo).map(async pluginId => {
-        if (!storedRepo || !storedRepo[pluginId] || repo[pluginId].alwaysFetch || newerThan(repo[pluginId].version, storedRepo[pluginId].version)) {
+    const pluginIds = Object.keys(repo).filter(id => !id.startsWith("$"));
+    await Promise.all(pluginIds.map(async pluginId => {
+        if (!storedRepo || !storedRepo[pluginId] || repo[pluginId].alwaysFetch || isGreaterVersion(repo[pluginId].version, storedRepo[pluginId].version)) {
             updated = true;
             pluginRepositories[repoUrl][pluginId] = repo[pluginId];
             await updateAndWritePlugin(repoUrl, pluginId, Boolean(storedRepo && pluginSettings[pluginId]));
         } else {
             const manifest = await preloadStorageIfExists(`plugins/manifests/${pluginId}.json`);
-            if (manifest === undefined) { // File does not exist, so do refetch and stuff
+            if (!manifest) { // File does not exist, so do refetch and stuff
                 await updateAndWritePlugin(repoUrl, pluginId, Boolean(storedRepo && pluginSettings[pluginId]));
             }
         }
     }));
 
     // Register plugins in this repository
-    for (const id in repo) {
+    for (const id of pluginIds) {
         const manifest = getPreloadedStorage<t.BunnyPluginManifest>(`plugins/manifests/${id}.json`);
         if (manifest === undefined) continue; // shouldn't happen, but just incase if it does
 
         const existing = registeredPlugins.get(id);
 
         // Skip if this version isn't any higher
-        if (existing && !newerThan(manifest.version, existing.version)) {
+        if (existing && !isGreaterVersion(manifest.version, existing.version)) {
             continue;
         }
 
         registeredPlugins.set(id, manifest);
-        manifestToId.set(manifest, id);
     }
 
     return updated;
@@ -210,11 +202,13 @@ export async function deleteRepository(repoUrl: string) {
         }
 
         // Deregister all plugins under this repository
+        promQueues.push(purgeStorage(`plugins/manifests/${id}.json`));
         registeredPlugins.delete(id);
     }
 
     delete pluginRepositories[repoUrl];
     await Promise.all(promQueues);
+    updateAllRepository();
 }
 
 /**
@@ -225,8 +219,8 @@ export async function deleteRepository(repoUrl: string) {
 export async function enablePlugin(id: string, start: boolean) {
     assert(isPluginInstalled(id), id, "enable a non-installed plugin");
 
-    pluginSettings[id]!!.enabled = true;
     if (start) await startPlugin(id);
+    pluginSettings[id]!.enabled = true;
 }
 
 /**
@@ -237,7 +231,7 @@ export function disablePlugin(id: string) {
     assert(isPluginInstalled(id), id, "disable a non-installed plugin");
 
     pluginInstances.has(id) && stopPlugin(id);
-    pluginSettings[id]!!.enabled = false;
+    pluginSettings[id]!.enabled = false;
 }
 
 /**
@@ -273,6 +267,7 @@ export async function uninstallPlugin(id: string) {
     pluginInstances.has(id) && stopPlugin(id);
     delete pluginSettings[id];
 
+    await purgeStorage(`plugins/storage/${id}.json`);
     await removeFile(`plugins/scripts/${id}.js`);
 }
 
@@ -280,13 +275,12 @@ export async function uninstallPlugin(id: string) {
  * Starts a registered, installed, enabled and unstarted plugin. Otherwise, would throw.
  * @param id The enabled plugin ID
  */
-export async function startPlugin(id: string) {
+export async function startPlugin(id: string, { throwIfDisabled = false, disableWhenThrown = true } = {}) {
     const manifest = registeredPlugins.get(id);
 
-    // horror
     assert(manifest, id, "start a non-registered plugin");
     assert(isPluginInstalled(id), id, "start a non-installed plugin");
-    assert(pluginSettings[id]?.enabled, id, "start a disabled plugin");
+    assert(!throwIfDisabled || pluginSettings[id]?.enabled, id, "start a disabled plugin");
     assert(!pluginInstances.has(id), id, "start an already started plugin");
 
     await preloadStorageIfExists(`plugins/storage/${id}.json`);
@@ -308,7 +302,7 @@ export async function startPlugin(id: string) {
 
         // Stage two, load the plugin
         try {
-            const api = createBunnyPluginAPI(id);
+            const api = createBunnyPluginApi(id);
             pluginInstance = instantiator(api.object, p => {
                 return Object.assign(p, {
                     manifest
@@ -331,9 +325,10 @@ export async function startPlugin(id: string) {
     // Stage three (of external plugins), start the plugin
     try {
         pluginInstance.start?.();
+        pluginSettings[id]!.enabled = true;
     } catch (error) {
+        disableWhenThrown && disablePlugin(id);
         throw new Error("An error occured while starting the plugin", { cause: error });
-        // TODO: stopPlugin? disablePlugin?
     }
 }
 
@@ -351,7 +346,7 @@ export function stopPlugin(id: string) {
     pluginInstances.delete(id);
 }
 
-async function updateAllRepository() {
+export async function updateAllRepository() {
     try {
         await updateRepository(OFFICIAL_PLUGINS_REPO_URL);
     } catch (error) {
@@ -382,7 +377,6 @@ export async function updatePlugins() {
         };
 
         registeredPlugins.set(id, instance.manifest);
-        manifestToId.set(instance.manifest, id);
         corePluginInstances.set(id, instance);
     }
 

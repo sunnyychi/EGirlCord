@@ -1,4 +1,5 @@
 import { CardWrapper } from "@core/ui/components/AddonCard";
+import { UnifiedPluginModel } from "@core/ui/settings/pages/Plugins/models";
 import { usePluginCardStyles } from "@core/ui/settings/pages/Plugins/usePluginCardStyles";
 import { findAssetId } from "@lib/api/assets";
 import { NavigationNative, tokens } from "@metro/common";
@@ -7,8 +8,6 @@ import { showSheet } from "@ui/sheets";
 import chroma from "chroma-js";
 import { createContext, useContext, useMemo } from "react";
 import { Image, View } from "react-native";
-
-import { UnifiedPluginModel } from "..";
 
 const CardContext = createContext<{ plugin: UnifiedPluginModel, result: Fuzzysort.KeysResult<UnifiedPluginModel>; }>(null!);
 const useCardContext = () => useContext(CardContext);
@@ -50,6 +49,8 @@ function Title() {
 
 function Authors() {
     const { plugin, result } = useCardContext();
+    const styles = usePluginCardStyles();
+
     if (!plugin.authors) return null;
 
     // could be empty if the author(s) are irrelevant with the search!
@@ -59,24 +60,23 @@ function Authors() {
         </Text>
     );
 
-    if (highlightedNode.length > 0) return (
-        <Text variant="text-md/semibold" color="text-muted">
-            by {highlightedNode}
-        </Text>
+    const badges = plugin.getBadges();
+    const authorText = highlightedNode.length > 0 ? highlightedNode : plugin.authors.map(a => a.name).join(", ");
+
+    return (
+        <View style={{ flexDirection: "row", flexWrap: "wrap", flexShrink: 1, gap: 4 }}>
+            <Text variant="text-sm/semibold" color="text-muted">
+                by {authorText}
+            </Text>
+            {badges.length > 0 && <View style={styles.badgesContainer}>
+                {badges.map((b, i) => <Image
+                    key={i}
+                    source={b.source}
+                    style={styles.badgeIcon}
+                />)}
+            </View>}
+        </View>
     );
-
-    const children = ["by "];
-
-    for (const author of plugin.authors) {
-        children.push(typeof author === "string" ? author : author.name);
-        children.push(", ");
-    }
-
-    children.pop();
-
-    return <Text variant="text-md/semibold" color="text-muted">
-        {children}
-    </Text>;
 }
 
 function Description() {

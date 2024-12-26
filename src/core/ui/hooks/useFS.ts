@@ -11,7 +11,7 @@ export enum CheckState {
 export function useFileExists(path: string, prefix?: string): [CheckState, typeof fs] {
     const [state, setState] = useState<CheckState>(CheckState.LOADING);
 
-    const check = () => fs.fileExists(path, prefix)
+    const check = () => fs.fileExists(path, { prefix })
         .then(exists => setState(exists ? CheckState.TRUE : CheckState.FALSE))
         .catch(() => setState(CheckState.ERROR));
 

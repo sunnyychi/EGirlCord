@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 blank_issues_enabled: false
 contact_links:
   - name: 🗨 Discussions
     url: https://discord.gg/ddcQf3s2Uq
     about: Have something unspecific to Revenge in mind? Join us on Discord!
+=======
+blank_issues_enabled: false
+>>>>>>> upstream/main

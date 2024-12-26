@@ -172,7 +172,7 @@ export default function Developer() {
                             label={Strings.ENABLE_EVAL_COMMAND}
                             subLabel={Strings.ENABLE_EVAL_COMMAND_DESC}
                             icon={<TableRow.Icon source={findAssetId("PencilIcon")} />}
-                            value={settings.enableEvalCommand}
+                            value={!!settings.enableEvalCommand}
                             onValueChange={(v: boolean) => {
                                 settings.enableEvalCommand = v;
                             }}

@@ -1,7 +1,7 @@
 import { VdPluginManager, VendettaPlugin } from "@core/vendetta/plugins";
 import { useProxy } from "@core/vendetta/storage";
 
-import { UnifiedPluginModel } from "..";
+import { UnifiedPluginModel } from ".";
 
 export default function unifyVdPlugin(vdPlugin: VendettaPlugin): UnifiedPluginModel {
     return {
@@ -11,6 +11,9 @@ export default function unifyVdPlugin(vdPlugin: VendettaPlugin): UnifiedPluginMo
         authors: vdPlugin.manifest.authors,
         icon: vdPlugin.manifest.vendetta?.icon,
 
+        getBadges() {
+            return [];
+        },
         isEnabled: () => vdPlugin.enabled,
         isInstalled: () => Boolean(vdPlugin && VdPluginManager.plugins[vdPlugin.id]),
         usePluginState() {

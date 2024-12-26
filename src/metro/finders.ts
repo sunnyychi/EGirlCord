@@ -63,6 +63,7 @@ export function findModuleId<A extends unknown[]>(filter: FilterFn<A>) {
 export function findExports<A extends unknown[]>(filter: FilterFn<A>) {
     const { id, defaultExport } = findModule(filter);
     if (id == null) return;
+
     return defaultExport ? requireModule(id).default : requireModule(id);
 }
 

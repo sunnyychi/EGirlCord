@@ -1,7 +1,7 @@
 import { getThemeFromLoader, selectTheme, themes } from "@lib/addons/themes";
 import { findAssetId } from "@lib/api/assets";
 import { getLoaderName, getLoaderVersion, isThemeSupported } from "@lib/api/native/loader";
-import { BundleUpdaterManager, ClientInfoManager, DeviceManager } from "@lib/api/native/modules";
+import { BundleUpdaterManager, NativeClientInfoModule, NativeDeviceModule } from "@lib/api/native/modules";
 import { after } from "@lib/api/patcher";
 import { settings } from "@lib/api/settings";
 import { logger } from "@lib/utils/logger";
@@ -113,8 +113,8 @@ export function getDebugInfo() {
             }
         },
         discord: {
-            version: ClientInfoManager.Version,
-            build: ClientInfoManager.Build,
+            version: NativeClientInfoModule.Version,
+            build: NativeClientInfoModule.Build,
         },
         react: {
             version: React.version,
@@ -149,15 +149,15 @@ export function getDebugInfo() {
                         manufacturer: PlatformConstants.Manufacturer,
                         brand: PlatformConstants.Brand,
                         model: PlatformConstants.Model,
-                        codename: DeviceManager.device
+                        codename: NativeDeviceModule.device
                     }
                 },
                 ios: {
                     device: {
-                        manufacturer: DeviceManager.deviceManufacturer,
-                        brand: DeviceManager.deviceBrand,
-                        model: DeviceManager.deviceModel,
-                        codename: DeviceManager.device
+                        manufacturer: NativeDeviceModule.deviceManufacturer,
+                        brand: NativeDeviceModule.deviceBrand,
+                        model: NativeDeviceModule.deviceModel,
+                        codename: NativeDeviceModule.device
                     }
                 }
             }
