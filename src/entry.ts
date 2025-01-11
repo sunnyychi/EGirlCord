@@ -66,6 +66,11 @@ if (typeof globalThis.__r !== "undefined") {
                 _requireFunc = function patchedRequire(a: number) {
                     // Initializing index.ts(x)
                     if (a === 0) {
+                        // https://github.com/facebook/metro/commit/1361405ffe6f1bdef54295addfef0f30523aaab2
+                        if (window.modules instanceof Map) {
+                            window.modules = Object.fromEntries([...window.modules]);
+                        }
+
                         onceIndexRequired(v);
                         _requireFunc = v;
                     } else return v(a);
