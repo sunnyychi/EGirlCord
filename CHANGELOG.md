@@ -1,3 +1,10 @@
+# [1.6.0-dev.1](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.4...v1.6.0-dev.1) (2025-01-22)
+
+
+### Features
+
+* support 263+ clients ([f1ba456](https://github.com/revenge-mod/revenge-bundle/commit/f1ba456474a85cbc291bdb320a16721bd6108483))
+
 ## [1.5.4](https://github.com/revenge-mod/revenge-bundle/compare/v1.5.3...v1.5.4) (2024-12-26)
 
 
