@@ -56,7 +56,9 @@ export function parseColorManifest(manifest: ColorManifest): InternalColorDefini
             raw: manifest.main.raw ?? {},
             background: manifest.main.background,
         };
-    } else if (manifest.spec === 2) { // is Vendetta theme
+    }
+
+    if (manifest.spec === 2) { // is Vendetta theme
         const semanticDefinitions: InternalColorDefinition["semantic"] = {};
         const background: InternalColorDefinition["background"] | undefined = manifest.background ? {
             ...omit(manifest.background, ["alpha"]),
@@ -76,13 +78,16 @@ export function parseColorManifest(manifest: ColorManifest): InternalColorDefini
         }
 
         if (manifest.rawColors) {
+            const draft: typeof manifest.rawColors = {};
+
             for (const key in manifest.rawColors) {
                 const value = manifest.rawColors[key];
                 if (!value) continue;
-                manifest.rawColors[key] = normalizeToHex(value)!;
+                draft[key] = normalizeToHex(value)!;
             }
 
-            if (Platform.OS === "android") applyAndroidAlphaKeys(manifest.rawColors);
+            if (Platform.OS === "android") applyAndroidAlphaKeys(draft);
+            manifest.rawColors = draft;
         }
 
 
