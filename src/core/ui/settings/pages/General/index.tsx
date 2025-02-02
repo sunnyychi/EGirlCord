@@ -67,7 +67,7 @@ export default function General() {
                         label={Strings.SAFE_MODE}
                         subLabel={settings.safeMode?.enabled ? Strings.RELOAD_IN_NORMAL_MODE_DESC : Strings.RELOAD_IN_SAFE_MODE_DESC}
                         icon={<TableRow.Icon source={findAssetId("ShieldIcon")!} />}
-                        value={!!settings.safeMode?.enabled}
+                        value={isSafeMode()}
                         onValueChange={(to: boolean) => {
                             toggleSafeMode({ to, reload: false });
                             openAlert(

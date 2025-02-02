@@ -3,29 +3,35 @@ import { _colorRef } from "@lib/addons/themes/colors/updater";
 import { after } from "@lib/api/patcher";
 import { useObservable } from "@lib/api/storage";
 import { findInReactTree } from "@lib/utils";
-import { lazyDestructure } from "@lib/utils/lazy";
-import { findByNameLazy, findByProps } from "@metro";
+import { findByFilePathLazy } from "@metro";
 import chroma from "chroma-js";
-import { ImageBackground } from "react-native";
+import { ImageBackground, StyleSheet } from "react-native";
 
-const MessagesWrapperConnected = findByNameLazy("MessagesWrapperConnected", false);
-const { MessagesWrapper } = lazyDestructure(() => findByProps("MessagesWrapper"));
+const Messages = findByFilePathLazy("components_native/chat/Messages.tsx", true);
+
+function ThemeBackground({ children }: { children: React.ReactNode }) {
+    useObservable([colorsPref]);
+
+    if (!_colorRef.current
+        || colorsPref.customBackground === "hidden"
+        || !_colorRef.current.background?.url
+        || _colorRef.current.background?.blur && (typeof _colorRef.current.background?.blur !== "number")
+    ){
+        return children;
+    }
+
+    return <ImageBackground
+        style={{ flex: 1, height: "100%" }}
+        source={{ uri: _colorRef.current.background?.url }}
+        blurRadius={_colorRef.current.background?.blur}
+    >
+        {children}
+    </ImageBackground>;
+}
 
 export default function patchChatBackground() {
     const patches = [
-        after("default", MessagesWrapperConnected, (_, ret) => {
-            useObservable([colorsPref]);
-            if (!_colorRef.current || !_colorRef.current.background?.url || colorsPref.customBackground === "hidden") return ret;
-
-            return <ImageBackground
-                style={{ flex: 1, height: "100%" }}
-                source={_colorRef.current.background?.url && { uri: _colorRef.current.background.url } || 0}
-                blurRadius={typeof _colorRef.current.background?.blur === "number" ? _colorRef.current.background?.blur : 0}
-            >
-                {ret}
-            </ImageBackground>;
-        }),
-        after("render", MessagesWrapper.prototype, (_, ret) => {
+        after("render", Messages, (_, ret) => {
             if (!_colorRef.current || !_colorRef.current.background?.url) return;
             const messagesComponent = findInReactTree(
                 ret,
@@ -33,17 +39,20 @@ export default function patchChatBackground() {
             );
 
             if (messagesComponent) {
+                const flattened = StyleSheet.flatten(messagesComponent.props.style);
                 const backgroundColor = chroma(
-                    messagesComponent.props.style.backgroundColor || "black"
+                    flattened.backgroundColor || "black"
                 ).alpha(
                     1 - (_colorRef.current.background?.opacity ?? 1)
-                );
+                ).hex();
 
-                messagesComponent.props.style = [
+                messagesComponent.props.style = StyleSheet.flatten([
                     messagesComponent.props.style,
                     { backgroundColor }
-                ];
+                ]);
             }
+
+            return <ThemeBackground>{ret}</ThemeBackground>;
         })
     ];
 
