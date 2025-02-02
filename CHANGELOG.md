@@ -1,3 +1,41 @@
+# [1.7.0](https://github.com/revenge-mod/revenge-bundle/compare/v1.6.0...v1.7.0) (2025-02-02)
+
+
+### Bug Fixes
+
+* Adapt to change of `window.modules` being a Map ([78c303b](https://github.com/revenge-mod/revenge-bundle/commit/78c303b5f5eae283b082f96ef5923f2eac110e7c)), closes [#120](https://github.com/revenge-mod/revenge-bundle/issues/120)
+* failsafe panel UI settings patching ([46a2c6e](https://github.com/revenge-mod/revenge-bundle/commit/46a2c6eaa16ca57f23f55881977f24ceb51e0d8b))
+* **issue-template:** declare no plugin request [skip ci] ([87cfc74](https://github.com/revenge-mod/revenge-bundle/commit/87cfc742f65397297bd23d2950739ea1387c218c))
+* **lib/api/native/modules:** add more native module fallbacks ([#102](https://github.com/revenge-mod/revenge-bundle/issues/102)) ([6f95203](https://github.com/revenge-mod/revenge-bundle/commit/6f95203dfa5beb3b48a9cc6061e712acd0ca8fb3)), closes [#99](https://github.com/revenge-mod/revenge-bundle/issues/99)
+* **metro/patchNativeComponentRegistry:** return component name if fail ([26b7615](https://github.com/revenge-mod/revenge-bundle/commit/26b7615f84ea32302771323de1a8c252dfd2b7d1))
+* **native:** update native modules name ([99c1266](https://github.com/revenge-mod/revenge-bundle/commit/99c12660f4857abe33ddc5b7056242b5c0ea8bcc))
+* only show plugin browser on dev mode ([0817e53](https://github.com/revenge-mod/revenge-bundle/commit/0817e533de7537eec47d52b4fe385ae0f65ef5cd))
+* pass IconComponent for settings section ([e80ab84](https://github.com/revenge-mod/revenge-bundle/commit/e80ab84b7cfe20acefc95954fb54b588eae89b7c))
+* pass IconComponent for settings section ([e56ec77](https://github.com/revenge-mod/revenge-bundle/commit/e56ec778e0ab44611d27297d9ce258c43a70ac8f))
+* **plugins:** filter out internal fields when loading plugins ([e141a62](https://github.com/revenge-mod/revenge-bundle/commit/e141a62dd06761d93f4ea957c32a7d4294253214))
+* **plugins:** race condition when enabling plugin ([85c10af](https://github.com/revenge-mod/revenge-bundle/commit/85c10aff12866d0f491bb6560464c46b3323077a))
+* readd semantic fallback for spec 2 themes ([0fd2107](https://github.com/revenge-mod/revenge-bundle/commit/0fd2107473c35334cc8ff2a548021469dadbbeb4))
+* set bottom inset for floating buttons ([6f52993](https://github.com/revenge-mod/revenge-bundle/commit/6f52993838573cd133f128c1c0b8507524140a00))
+* **themes:** use alternative way to patch chat background ([5ec4150](https://github.com/revenge-mod/revenge-bundle/commit/5ec41500b5c498d0ff45114af692961b0d1d574e)), closes [#123](https://github.com/revenge-mod/revenge-bundle/issues/123)
+* **theme:** update validation logic ([c3cbc78](https://github.com/revenge-mod/revenge-bundle/commit/c3cbc78e13d5679f5ae0f9a79a8a24b0764a0d4f))
+* **ui/reporter/ErrorBoundaryScreen:** move comment to a single line ([657c8eb](https://github.com/revenge-mod/revenge-bundle/commit/657c8ebd78df946a1aacd75c50e50b63920ebc2f))
+* update file existence check to use object for prefix ([85cbac7](https://github.com/revenge-mod/revenge-bundle/commit/85cbac714a40d4afc273e9d710608c9094942412))
+* wrap ErrorBoundaryScreen with SafeAreaProvider ([5e3f9b7](https://github.com/revenge-mod/revenge-bundle/commit/5e3f9b72361159da57c072cafed44424184d57f5))
+
+
+### Features
+
+* adopt dev metro ([cc87948](https://github.com/revenge-mod/revenge-bundle/commit/cc879485ac7d720c04191453865c677351b86f8c))
+* **themes:** port more stuff from 'dev' ([0eb28e4](https://github.com/revenge-mod/revenge-bundle/commit/0eb28e41b7243fcae952ded5a7c44c274103d753))
+* **ui/plugins:** Bunny plugin sheet impl ([c168237](https://github.com/revenge-mod/revenge-bundle/commit/c168237fc97bcf34353d6bf391f360cbccdbed84))
+* **ui:** allow adding repository ([b5611d3](https://github.com/revenge-mod/revenge-bundle/commit/b5611d3cf185fd22b0a9adcffe3e473c3df7ca49))
+* **ui:** update icons in About page ([ad9e05c](https://github.com/revenge-mod/revenge-bundle/commit/ad9e05c2034cbf82a2784bde7c50a4f40f70e03c))
+
+
+### Performance Improvements
+
+* **themes:** Draft rawColors normalization since writing directly is insanely slow for some reason ([e77e663](https://github.com/revenge-mod/revenge-bundle/commit/e77e6639d4a4d44f2f0cd0a9df708ea4f879d17b))
+
 # [1.7.0-dev.1](https://github.com/revenge-mod/revenge-bundle/compare/v1.6.0...v1.7.0-dev.1) (2025-02-02)
 
 
