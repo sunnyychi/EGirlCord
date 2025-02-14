@@ -1,6 +1,5 @@
 import { after } from "@lib/api/patcher";
 import { findInReactTree } from "@lib/utils";
-import { i18n } from "@metro/common";
 import { TableRow } from "@metro/common/components";
 import { findByNameLazy, findByPropsLazy } from "@metro/wrappers";
 import { registeredSections } from "@ui/settings";
@@ -77,8 +76,8 @@ export function patchTabsUI(unpatches: (() => void | boolean)[]) {
         if (useIsFirstRender()) return; // :shrug:
 
         const { sections } = findInReactTree(ret, i => i.props?.sections).props;
-        // TODO: Use new i18n lib
-        let index = -~sections.findIndex((i: any) => i.label === i18n.Messages.ACCOUNT_SETTINGS) || 1;
+        // Credit to @palmdevs - https://discord.com/channels/1196075698301968455/1243605828783571024/1307940348378742816
+        let index = -~sections.findIndex((i: any) => i.settings.includes("ACCOUNT")) || 1;
 
         Object.keys(registeredSections).forEach(sect => {
             sections.splice(index++, 0, {
