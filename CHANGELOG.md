@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/revenge-mod/revenge-bundle/compare/v1.7.0...v1.7.1) (2025-02-14)
+
+
+### Bug Fixes
+
+* **settings:** update tab index lookup approach ([93c17e8](https://github.com/revenge-mod/revenge-bundle/commit/93c17e8e0c8597104d147d94da71078d6e368135))
+
 ## [1.7.1-dev.1](https://github.com/revenge-mod/revenge-bundle/compare/v1.7.0...v1.7.1-dev.1) (2025-02-14)
 
 
