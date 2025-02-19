@@ -76,7 +76,8 @@ function isBadExports(exports: any) {
     return !exports
         || exports === window
         || exports["<!@ pylix was here :fuyusquish: !@>"] === null
-        || (exports.__proto__ === Object.prototype && Reflect.ownKeys(exports).length === 0);
+        || (exports.__proto__ === Object.prototype && Reflect.ownKeys(exports).length === 0)
+        || (exports.default?.[Symbol.toStringTag] === "IntlMessagesProxy");
 }
 
 function onModuleRequire(moduleExports: any, id: Metro.ModuleID) {
