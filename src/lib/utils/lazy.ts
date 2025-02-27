@@ -41,6 +41,8 @@ const lazyHandler: ProxyHandler<any> = {
         return Reflect.has(resolved, p);
     },
     get(target, p, receiver) {
+        if (__DEV__ && p === "__IS_BUNNY_LAZY_PROXY__") return true;
+
         const contextHolder = proxyContextHolder.get(target);
 
         if (contextHolder?.options) {
@@ -62,11 +64,11 @@ const lazyHandler: ProxyHandler<any> = {
         return cacheKeys;
     },
     getOwnPropertyDescriptor: (target, p) => {
+        if (isUnconfigurable(p)) return Reflect.getOwnPropertyDescriptor(target, p);
+
         const contextHolder = proxyContextHolder.get(target);
         const resolved = contextHolder?.factory();
         if (!resolved) throw new Error(`Trying to getOwnPropertyDescriptor of ${typeof resolved}`);
-
-        if (isUnconfigurable(p)) return Reflect.getOwnPropertyDescriptor(target, p);
 
         const descriptor = Reflect.getOwnPropertyDescriptor(resolved, p);
         if (descriptor) Object.defineProperty(target, p, descriptor);

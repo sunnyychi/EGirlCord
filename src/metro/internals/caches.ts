@@ -4,7 +4,7 @@ import { debounce } from "es-toolkit";
 
 import { ModuleFlags, ModulesMapInternal } from "./enums";
 
-const CACHE_VERSION = 100;
+const CACHE_VERSION = 102;
 const BUNNY_METRO_CACHE_PATH = "caches/metro_modules.json";
 
 type ModulesMap = {
@@ -13,7 +13,7 @@ type ModulesMap = {
 
 let _metroCache = null as unknown as ReturnType<typeof buildInitCache>;
 
-export const getMetroCache = window.__getMetroCache = () => _metroCache;
+export const getMetroCache = () => _metroCache;
 
 function buildInitCache() {
     const cache = {
