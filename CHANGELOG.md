@@ -1,3 +1,11 @@
+## [1.7.2-dev.1](https://github.com/revenge-mod/revenge-bundle/compare/v1.7.1...v1.7.2-dev.1) (2025-02-27)
+
+
+### Bug Fixes
+
+* **metro:** Blacklist IntlMessagesProxy exports ([e2a05a7](https://github.com/revenge-mod/revenge-bundle/commit/e2a05a77eef57d5eeea7204e93941278c4ed3340))
+* **settings:** update tab index lookup approach ([821cbf0](https://github.com/revenge-mod/revenge-bundle/commit/821cbf01f2b16d8ba454fdbcf41efcb754607152))
+
 ## [1.7.1](https://github.com/revenge-mod/revenge-bundle/compare/v1.7.0...v1.7.1) (2025-02-14)
 
 
