@@ -35,7 +35,7 @@ const config = {
     splitting: false,
     external: [],
     supported: {
-        // Hermes does not actually support const and let, even though it syntactically
+        // Hermes does not actually support const and let, even though it syntacticall
         // accepts it, but it's treated just like 'var' and causes issues
         "const-and-let": false
     },
