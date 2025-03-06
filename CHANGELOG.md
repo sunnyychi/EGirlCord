@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/sunnyychi/EGirlCord/compare/v1.0.0...v1.1.0) (2025-03-06)
+
+
+### Features
+
+* Balls ([433e174](https://github.com/sunnyychi/EGirlCord/commit/433e1746f7e8260013c3b509f511193c38326dde))
+
 # 1.0.0 (2025-03-01)
 
 
